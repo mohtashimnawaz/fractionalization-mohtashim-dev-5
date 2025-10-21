@@ -19,15 +19,32 @@
 
 import { PublicKey } from '@solana/web3.js';
 
-// Helius API configuration
-const HELIUS_API_KEY = process.env.NEXT_PUBLIC_HELIUS_API_KEY || '';
+const HELIUS_API_KEY = (process.env.NEXT_PUBLIC_HELIUS_API_KEY || '').trim();
 const HELIUS_RPC_URL = `https://devnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`;
 
-if (!HELIUS_API_KEY) {
-  console.warn(
-    '⚠️ NEXT_PUBLIC_HELIUS_API_KEY not set. Please add it to .env.local'
-  );
+/**
+ * Returns true if the Helius API key is configured in the environment.
+ * Exported so UI/hooks can show a friendly banner before calling any Helius APIs.
+ */
+export function isHeliusConfigured(): boolean {
+  return !!HELIUS_API_KEY;
 }
+
+function heliusKeyMissingError(): Error {
+  return new Error([
+    'Helius API key not configured. Please add NEXT_PUBLIC_HELIUS_API_KEY to your environment.',
+    '',
+    'Local development:',
+    "  - Add NEXT_PUBLIC_HELIUS_API_KEY=your_key to the project's .env.local (do not commit).",
+    '',
+    'Vercel (production):',
+    "  - Dashboard → Project → Settings → Environment Variables → Add NEXT_PUBLIC_HELIUS_API_KEY",
+    "  - Save and trigger a redeploy (push or click Redeploy).",
+    '',
+    'Docs: https://docs.helius.dev/',
+  ].join('\n'));
+}
+
 
 /**
  * Compressed NFT metadata structure from Helius DAS API
