@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET(_req: NextRequest) {
+export async function GET() {
   try {
     const heliusKey = process.env.HELIUS_API_KEY || process.env.NEXT_PUBLIC_HELIUS_API_KEY || '';
     if (!heliusKey || heliusKey.trim() === '' || heliusKey.includes('YOUR_HELIUS_API_KEY')) {
