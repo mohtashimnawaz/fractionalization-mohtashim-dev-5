@@ -6,10 +6,28 @@
 
 import { FractionalizationWorkflow } from '@/components/fractionalization/fractionalization-workflow';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { isHeliusConfigured } from '@/lib/helius';
+import { useEffect, useState } from 'react';
 
 export default function FractionalizePage() {
-  const heliusOk = isHeliusConfigured();
+  const [heliusOk, setHeliusOk] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    fetch('/api/helius/health')
+      .then((r) => r.json())
+      .then((data) => {
+        if (!mounted) return;
+        setHeliusOk(Boolean(data?.ok));
+      })
+      .catch(() => {
+        if (!mounted) return;
+        setHeliusOk(false);
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   return (
     <div className="container mx-auto px-4 py-8">

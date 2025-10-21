@@ -153,27 +153,16 @@ export interface CompressedNFT {
  * Call Helius DAS API
  */
 async function callDASApi<T>(method: string, params: unknown): Promise<T> {
-  if (!HELIUS_API_KEY) {
-    throw new Error(
-      'Helius API key not configured. Please add NEXT_PUBLIC_HELIUS_API_KEY to .env.local'
-    );
-  }
-
-  const response = await fetch(HELIUS_RPC_URL, {
+  // Call server-side proxy which keeps the API key secret
+  const response = await fetch('/api/helius/proxy', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      jsonrpc: '2.0',
-      id: 'helius-das-api',
-      method,
-      params,
-    }),
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ jsonrpc: '2.0', id: 'helius-das-api', method, params }),
   });
 
   if (!response.ok) {
-    throw new Error(`Helius API error: ${response.statusText}`);
+    const text = await response.text();
+    throw new Error(`Helius proxy error: ${response.status} ${text}`);
   }
 
   const data = await response.json();

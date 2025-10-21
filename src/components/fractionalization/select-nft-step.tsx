@@ -17,7 +17,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Loader2, RefreshCw, Plus } from 'lucide-react';
-import Image from 'next/image';
+import ExternalImage from '@/components/ui/external-image';
 
 export function SelectNFTStep() {
   const { account } = useWallet();
@@ -310,7 +310,7 @@ export function SelectNFTStep() {
           >
             <div className="p-4 space-y-3">
               <div className="relative aspect-square w-full overflow-hidden rounded-lg bg-muted">
-                <Image
+                <ExternalImage
                   src={nft.image}
                   alt={nft.name}
                   fill

@@ -17,38 +17,25 @@ const mintCompressedNFT = async (
   params: MintCNFTParams,
   walletAddress: string
 ): Promise<{ assetId: string; signature?: string }> => {
-  const heliusApiKey = process.env.NEXT_PUBLIC_HELIUS_API_KEY;
-  
-  if (!heliusApiKey) {
-    throw new Error('Helius API key not configured');
-  }
-
-  const response = await fetch(
-    `https://devnet.helius-rpc.com/?api-key=${heliusApiKey}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        jsonrpc: '2.0',
-        id: 'mint-cnft',
-        method: 'mintCompressedNft',
-        params: {
-          name: params.name,
-          symbol: params.symbol,
-          owner: walletAddress,
-          description: params.description || 'A compressed NFT for testing fractionalization',
-          attributes: [
-            { trait_type: 'Type', value: 'Compressed' },
-            { trait_type: 'Network', value: 'Devnet' },
-            { trait_type: 'Created', value: new Date().toISOString() },
-          ],
-          imageUrl: params.imageUrl || 'https://via.placeholder.com/400/6366f1/ffffff?text=cNFT',
-          externalUrl: 'https://example.com',
-          sellerFeeBasisPoints: 500,
-        },
-      }),
-    }
-  );
+  // Call server-side mint endpoint so the Helius API key stays on server
+  const response = await fetch('/api/helius/mint', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      name: params.name,
+      symbol: params.symbol,
+      owner: walletAddress,
+      description: params.description || 'A compressed NFT for testing fractionalization',
+      attributes: [
+        { trait_type: 'Type', value: 'Compressed' },
+        { trait_type: 'Network', value: 'Devnet' },
+        { trait_type: 'Created', value: new Date().toISOString() },
+      ],
+      imageUrl: params.imageUrl || 'https://via.placeholder.com/400/6366f1/ffffff?text=cNFT',
+      externalUrl: 'https://example.com',
+      sellerFeeBasisPoints: 500,
+    }),
+  });
 
   const data = await response.json();
 
