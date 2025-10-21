@@ -5,8 +5,12 @@
 'use client';
 
 import { FractionalizationWorkflow } from '@/components/fractionalization/fractionalization-workflow';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { isHeliusConfigured } from '@/lib/helius';
 
 export default function FractionalizePage() {
+  const heliusOk = isHeliusConfigured();
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
@@ -15,6 +19,18 @@ export default function FractionalizePage() {
           Convert your NFT into fractional tokens
         </p>
       </div>
+
+      {!heliusOk && (
+        <Alert variant="warning" className="mb-6">
+          <AlertTitle>Helius API key missing</AlertTitle>
+          <AlertDescription>
+            This app needs a Helius API key to load compressed NFTs.
+            <br />
+            Add <code>NEXT_PUBLIC_HELIUS_API_KEY</code> to your <code>.env.local</code> or set it in Vercel environment variables.
+          </AlertDescription>
+        </Alert>
+      )}
+
       <FractionalizationWorkflow />
     </div>
   );

@@ -3,7 +3,7 @@
  */
 
 import { useQuery } from '@tanstack/react-query';
-import { getAssetsByOwner, CompressedNFT } from '@/lib/helius';
+import { getAssetsByOwner, CompressedNFT, isHeliusConfigured } from '@/lib/helius';
 
 /**
  * Fetch compressed NFTs owned by the connected wallet
@@ -12,6 +12,12 @@ const fetchUserCNFTs = async (
   walletAddress?: string
 ): Promise<CompressedNFT[]> => {
   if (!walletAddress) return [];
+
+  // Avoid calling Helius if API key is not configured to prevent noisy errors
+  if (!isHeliusConfigured()) {
+    console.warn('Skipping Helius call: NEXT_PUBLIC_HELIUS_API_KEY not configured');
+    return [];
+  }
 
   try {
     return await getAssetsByOwner(walletAddress);
